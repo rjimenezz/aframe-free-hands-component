@@ -1,6 +1,6 @@
 {
     "name": "free-hands",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "Hand tracking interaction components for A-Frame",
     "main": "dist/free-hands.min.js",
     "scripts": {

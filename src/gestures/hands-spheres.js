@@ -1,19 +1,25 @@
 AFRAME.registerComponent('manos-esferas', {
   schema: {
     // Radio por defecto si el dispositivo no da radio de la articulación
-    radius: {type: 'number', default: 0.006},
+    radius: { type: 'number', default: 0.006 },
     // Usar el radio estimado del XRHand (si está disponible)
-    useJointRadius: {type: 'boolean', default: true},
-    radiusScale: {type: 'number', default: 1.0},
-    minRadius: {type: 'number', default: 0.004},
-    maxRadius: {type: 'number', default: 0.012},
+    useJointRadius: { type: 'boolean', default: true },
+    radiusScale: { type: 'number', default: 1.0 },
+    minRadius: { type: 'number', default: 0.004 },
+    maxRadius: { type: 'number', default: 0.012 },
     // Colores por mano
-    colorLeft: {type: 'string', default: '#39f'},
-    colorRight: {type: 'string', default: '#f93'},
-    opacity: {type: 'number', default: 0.85},
+    colorLeft: { type: 'string', default: '#39f' },
+    colorRight: { type: 'string', default: '#f93' },
+    opacity: { type: 'number', default: 0.85 },
     // Etiquetas opcionales con el nombre de la articulación
-    labels: {type: 'boolean', default: false},
-    labelScale: {type: 'number', default: 0.2}
+    labels: { type: 'boolean', default: false },
+    labelScale: { type: 'number', default: 0.2 },
+    // Gestos integrados (opcionales)
+    enablePinch: { type: 'boolean', default: false },
+    enablePoint: { type: 'boolean', default: false },
+    gestureHand: { type: 'string', default: 'any' },
+    gestureEmitEachFrame: { type: 'boolean', default: true },
+    gestureColliderType: { type: 'string', default: 'obb-collider', oneOf: ['obb-collider', 'sat-collider'] }
   },
 
   init: function () {
@@ -22,8 +28,29 @@ AFRAME.registerComponent('manos-esferas', {
     // key: "left:wrist", "right:index-finger-tip" -> { sphere, label? }
     this.jointEntities = {};
     this._touched = new Set();
+    this._autoGestures = { pinch: false, point: false };
+    this._ensureGestures();
   },
 
+  _ensureGestures: function () {
+    if (this.data.enablePinch && !this.el.components['gesto-pellizco']) {
+      this.el.setAttribute('gesto-pellizco', {
+        hand: this.data.gestureHand,
+        emitEachFrame: this.data.gestureEmitEachFrame,
+        colliderType: this.data.gestureColliderType
+      });
+      this._autoGestures.pinch = true;
+    }
+
+    if (this.data.enablePoint && !this.el.components['gesto-apuntar']) {
+      this.el.setAttribute('gesto-apuntar', {
+        hand: this.data.gestureHand,
+        emitEachFrame: this.data.gestureEmitEachFrame,
+        colliderType: this.data.gestureColliderType
+      });
+      this._autoGestures.point = true;
+    }
+  },
   tick: function () {
     const scene = this.el.sceneEl;
     if (!scene || !scene.renderer) return;
@@ -120,6 +147,8 @@ AFRAME.registerComponent('manos-esferas', {
   },
 
   remove: function () {
+    if (this._autoGestures?.pinch) this.el.removeAttribute('gesto-pellizco');
+    if (this._autoGestures?.point) this.el.removeAttribute('gesto-apuntar');
     // Limpiar esferas al quitar el componente
     for (const entry of Object.values(this.jointEntities)) {
       entry.sphere.remove();
