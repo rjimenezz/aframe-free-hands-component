@@ -39,7 +39,13 @@ AFRAME.registerComponent('clickable', {
         this.isGesturing = { left: false, right: false };
 
         this._ensureCollider();
+        if (this.colliderType === 'obb-collider') {
+            this._onOBBCollisionStart = this._onOBBCollisionStart.bind(this);
+            this._onOBBCollisionEnd = this._onOBBCollisionEnd.bind(this);
 
+            this.el.addEventListener('obbcollisionstarted', this._onOBBCollisionStart);
+            this.el.addEventListener('obbcollisionended', this._onOBBCollisionEnd);
+        }
         this._onGestureStart = this._onGestureStart.bind(this);
         this._onGestureEnd = this._onGestureEnd.bind(this);
         this._onGestureMove = this._onGestureMove.bind(this);
@@ -139,7 +145,10 @@ AFRAME.registerComponent('clickable', {
             const moveEvent = this.data.startGesture.replace('start', 'move');
             this.detector.removeEventListener(moveEvent, this._onGestureMove);
         }
-
+        if (this.colliderType === 'obb-collider') {
+            this.el.removeEventListener('obbcollisionstarted', this._onOBBCollisionStart);
+            this.el.removeEventListener('obbcollisionended', this._onOBBCollisionEnd);
+        }
         while (this.clickers.length > 0) {
             this._releaseClick(this.clickers[0].hand);
         }
@@ -151,32 +160,87 @@ AFRAME.registerComponent('clickable', {
     },
 
     _ensureCollider: function () {
-        const hasCollider = this.el.components['sat-collider'] || this.el.components['obb-collider'];
+        const hasCollider = this.el.components[this.colliderType];
 
         if (!hasCollider) {
             let size = this.data.colliderSize;
 
             const geometry = this.el.getAttribute('geometry');
-            if (geometry) {
-                if (geometry.primitive === 'box') {
-                    size = {
-                        x: geometry.width || 1,
-                        y: geometry.height || 1,
-                        z: geometry.depth || 1
-                    };
-                } else if (geometry.primitive === 'sphere') {
-                    const r = (geometry.radius || 0.5) * 2;
-                    size = { x: r, y: r, z: r };
-                }
+            if (geometry?.primitive === 'box') {
+                size = {
+                    x: geometry.width || 1,
+                    y: geometry.height || 1,
+                    z: geometry.depth || 1
+                };
+            } else if (geometry?.primitive === 'sphere') {
+                const r = (geometry.radius || 0.5) * 2;
+                size = { x: r, y: r, z: r };
             }
 
             console.log(`[clickable] Añadiendo ${this.colliderType} con tamaño:`, size);
 
-            const colliderConfig = `size: ${size.x} ${size.y} ${size.z}; debug: ${this.data.debug}`;
-            this.el.setAttribute(this.colliderType, colliderConfig);
+            if (this.colliderType === 'obb-collider') {
+                if (!geometry) {
+                    this.el.setAttribute('geometry', {
+                        primitive: 'box',
+                        width: size.x,
+                        height: size.y,
+                        depth: size.z
+                    });
+                }
+
+                this.el.setAttribute('obb-collider', {
+                    trackedObject3D: 'mesh'
+                });
+
+                const existingMaterial = this.el.getAttribute('material');
+                if (!existingMaterial || existingMaterial.visible === false) {
+                    if (this.data.debug) {
+                        this.el.setAttribute('material', {
+                            color: '#ff0',
+                            opacity: 0.2,
+                            transparent: true,
+                            wireframe: true
+                        });
+                    } else {
+                        this.el.setAttribute('material', {
+                            visible: false,
+                            transparent: true,
+                            opacity: 0
+                        });
+                    }
+                }
+            } else {
+                const colliderConfig = `size: ${size.x} ${size.y} ${size.z}; debug: ${this.data.debug}`;
+                this.el.setAttribute('sat-collider', colliderConfig);
+            }
+        }
+    },
+    _onOBBCollisionStart: function (e) {
+        const collidedWith = e.detail.withEl;
+        if (collidedWith?.id.startsWith('hand-collider-') || collidedWith?.id.startsWith('hand-point-collider-')) {
+            const hand = collidedWith.id.includes('left') ? 'left' : 'right';
+            this.inContact[hand] = true;
+
+            if (this.isGesturing[hand]) {
+                const alreadyClicking = this.clickers.findIndex(c => c.hand === hand) !== -1;
+                const hasLimit = !isNaN(this.data.maxClickers);
+                const belowLimit = !hasLimit || this.clickers.length < this.data.maxClickers;
+                if (!alreadyClicking && belowLimit) {
+                    this._startClick(hand);
+                }
+            }
         }
     },
 
+    _onOBBCollisionEnd: function (e) {
+        const collidedWith = e.detail.withEl;
+        if (collidedWith?.id.startsWith('hand-collider-') || collidedWith?.id.startsWith('hand-point-collider-')) {
+            const hand = collidedWith.id.includes('left') ? 'left' : 'right';
+            this.inContact[hand] = false;
+            this._releaseClick(hand);
+        }
+    },
     tick: function () {
         if (!this.detector) return;
 
