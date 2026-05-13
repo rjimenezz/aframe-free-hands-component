@@ -5,15 +5,10 @@
   <title>Grabbable con Pellizco y Apuntar</title>
   <meta charset="utf-8">
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-
   <script>
     delete AFRAME.components["grabbable"];
   </script>
-  <script src="sat-collider.js"></script>
-  <script src="GestoPellizco.js"></script>
-  <script src="GestoApuntar.js"></script>
-  <script src="ManosEsferas.js"></script>
-  <script src="Grabbable.js"></script>
+  <script src="/dist/free-hands.min.js"></script>
 </head>
 
 <body>
@@ -23,33 +18,8 @@
     <a-entity>
       <a-camera position="0 1.6 0"></a-camera>
 
-      <!-- Detector de pellizco -->
-      <a-entity id="detector-pellizco" gesto-pellizco="hand:any; 
-                               startDistance:0.025; 
-                               endDistance:0.035; 
-                               emitEachFrame:true; 
-                               debugCollider:true;
-                               colliderType:obb-collider">
-      </a-entity>
-
-      <!-- Detector de apuntar -->
-      <a-entity id="detector-apuntar" gesto-apuntar="hand:any; 
-                              indexExtendedThreshold:0.06; 
-                              otherFingersThreshold:0.08;
-                              releaseThreshold:0.10;
-                              pinchCancelThreshold:0.04;
-                              emitEachFrame:true; 
-                              debugCollider:false;
-                              colliderType:sat-collider">
-      </a-entity>
-
-      <!-- Visualizar manos -->
-      <a-entity manos-esferas="useJointRadius:true; 
-                               colorLeft:#39f; 
-                               colorRight:#f93; 
-                               opacity:0.7; 
-                               labels:false">
-      </a-entity>
+      <!-- Detectores -->
+      <a-entity manos-esferas="enablePinch:true; enablePoint:true; gestureColliderType:obb-collider"></a-entity>
     </a-entity>
 
     <!-- Cubo AZUL: se agarra con PELLIZCO -->

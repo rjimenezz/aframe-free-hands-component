@@ -5,22 +5,18 @@
     <title>Clickable Simple</title>
     <meta charset="utf-8">
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="sat-collider.js"></script>
-    <script src="GestoPellizco.js"></script>
-    <script src="GestoApuntar.js"></script>
-    <script src="ManosEsferas.js"></script>
-    <script src="Clickable.js"></script>
+    <script>
+        delete AFRAME.components["grabbable"];
+    </script>
+    <script src="/dist/free-hands.min.js"></script>
 </head>
 
 <body>
     <a-scene xr-mode-ui="enabled: true" webxr="optionalFeatures: hand-tracking">
 
         <a-camera position="0 1.6 0">
-            <!-- Detector de apuntar -->
-            <a-entity id="detector-apuntar" gesto-apuntar="hand:any"></a-entity>
-
-            <!-- Visualizar manos -->
-            <a-entity manos-esferas></a-entity>
+            <!-- Detectores -->
+            <a-entity manos-esferas="enablePinch:false; enablePoint:true; gestureColliderType:obb-collider"></a-entity>
         </a-camera>
 
         <!-- Cubo clickable -->

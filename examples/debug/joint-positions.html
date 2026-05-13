@@ -1,38 +1,32 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Posiciones WebXR</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="Posiciones.js"></script>
+    <script>
+        delete AFRAME.components["grabbable"];
+    </script>
+    <script src="/dist/free-hands.min.js"></script>
 </head>
+
 <body>
-    <a-scene xr-mode-ui="enabled: true" 
-      webxr="optionalFeatures: hand-tracking">
+    <a-scene xr-mode-ui="enabled: true" webxr="optionalFeatures: hand-tracking">
         <a-camera position="0 1.6 3"></a-camera>
         <a-entity hand-tracker></a-entity>
-        
+
         <!-- Panel para mostrar información -->
-        <a-plane 
-            id="infoPanel" 
-            position="0 2 -2" 
-            scale="6 4 1" 
-            color="#000000" 
-            opacity="0.9">
+        <a-plane id="infoPanel" position="0 2 -2" scale="6 4 1" color="#000000" opacity="0.9">
         </a-plane>
-        
-        <a-text 
-            id="handInfo" 
-            position="0 2 -1.9" 
-            value="Esperando datos de manos..." 
-            color="lime" 
-            align="center"
-            width="12"
-            wrap-count="60">
+
+        <a-text id="handInfo" position="0 2 -1.9" value="Esperando datos de manos..." color="lime" align="center"
+            width="12" wrap-count="60">
         </a-text>
-        
+
         <a-sky color="#001122"></a-sky>
     </a-scene>
-    
-    
+
+
 </body>
+
 </html>

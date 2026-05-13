@@ -8,31 +8,15 @@
     <script>
         delete AFRAME.components["grabbable"];
     </script>
-    <script src="sat-collider.js"></script>
-    <script src="GestoPellizco.js"></script>
-    <script src="GestoApuntar.js"></script>
-    <script src="ManosEsferas.js"></script>
-    <script src="Grabbable.js"></script>
+    <script src="/dist/free-hands.min.js"></script>
 </head>
 
 <body>
     <a-scene xr-mode-ui="enabled: true" webxr="optionalFeatures: hand-tracking">
 
         <a-camera position="0 1.6 0">
-            <!-- Detector de pellizco con DEBUG activado -->
-            <a-entity id="detector-pellizco" gesto-pellizco="hand:any; 
-                                     emitEachFrame:true;
-                                     debugCollider:true;
-                                     colliderSize:0.12 0.08 0.18;
-                                     colliderType:obb-collider">
-            </a-entity>
-
-            <!-- Visualizar manos -->
-            <a-entity manos-esferas="useJointRadius:true; 
-                                     colorLeft:#39f; 
-                                     colorRight:#f93; 
-                                     opacity:0.7">
-            </a-entity>
+            <!-- Detectores -->
+            <a-entity manos-esferas="enablePinch:true; enablePoint:false; gestureColliderType:obb-collider"></a-entity>
         </a-camera>
 
         <!-- Cubo grabbable con DEBUG activado -->

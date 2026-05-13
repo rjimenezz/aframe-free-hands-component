@@ -5,10 +5,10 @@
     <title>Hoverable Simple</title>
     <meta charset="utf-8">
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="sat-collider.js"></script>
-    <script src="GestoPellizco.js"></script>
-    <script src="ManosEsferas.js"></script>
-    <script src="Hoverable.js"></script>
+    <script>
+        delete AFRAME.components["grabbable"];
+    </script>
+    <script src="/dist/free-hands.min.js"></script>
 
 </head>
 
@@ -16,11 +16,8 @@
     <a-scene xr-mode-ui="enabled: true" webxr="optionalFeatures: hand-tracking">
 
         <a-camera position="0 1.6 0">
-            <!-- Detector de mano -->
-            <a-entity gesto-pellizco="debugCollider:true; colliderType:obb-collider"></a-entity>
-
-            <!-- Visualizar manos -->
-            <a-entity manos-esferas></a-entity>
+            <!-- Detectores -->
+            <a-entity manos-esferas="enablePinch:true; enablePoint:false; gestureColliderType:obb-collider"></a-entity>
         </a-camera>
 
         <!-- Cubo azul → amarillo al hover -->
