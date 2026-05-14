@@ -67,7 +67,7 @@ AFRAME.registerComponent('droppable', {
         const entities = this.sceneEl.querySelectorAll('a-entity');
 
         for (let entity of entities) {
-            if (entity.components['gesto-pellizco'] || entity.components['gesto-apuntar']) {
+            if (entity.components['pich-gesture'] || entity.components['point-gesture']) {
                 detectors.push(entity);
             }
         }
@@ -77,8 +77,8 @@ AFRAME.registerComponent('droppable', {
 
     _detectColliderType: function () {
         for (let detector of this.detectors) {
-            const gestoComp = detector.components['gesto-pellizco'] ||
-                detector.components['gesto-apuntar'];
+            const gestoComp = detector.components['pich-gesture'] ||
+                detector.components['point-gesture'];
 
             if (gestoComp?.data.colliderType) {
                 return gestoComp.data.colliderType;

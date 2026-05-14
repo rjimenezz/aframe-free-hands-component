@@ -28,7 +28,7 @@ AFRAME.registerComponent('clickable', {
         this.detector = this._findDetector();
 
         if (!this.detector) {
-            console.warn('[clickable] No se encontró detector compatible. Creando detector automático con gesto-apuntar...');
+            console.warn('[clickable] No se encontró detector compatible. Creando detector automático con point-gesture...');
             this._createDetector();
         }
 
@@ -71,49 +71,49 @@ AFRAME.registerComponent('clickable', {
 
         let detector = document.getElementById('detector-clickable');
         if (detector) {
-            if (needsPinch && detector.components['gesto-pellizco']) return detector;
-            if (needsPoint && detector.components['gesto-apuntar']) return detector;
+            if (needsPinch && detector.components['pich-gesture']) return detector;
+            if (needsPoint && detector.components['point-gesture']) return detector;
         }
 
         // ✅ NUEVO: Buscar detector-apuntar por ID
         detector = document.getElementById('detector-apuntar');
         if (detector) {
-            if (needsPoint && detector.components['gesto-apuntar']) return detector;
+            if (needsPoint && detector.components['point-gesture']) return detector;
         }
 
         detector = document.getElementById('detector-pellizco');
         if (detector) {
-            if (needsPinch && detector.components['gesto-pellizco']) return detector;
+            if (needsPinch && detector.components['pich-gesture']) return detector;
         }
 
         detector = document.getElementById('detector');
         if (detector) {
-            if (needsPinch && detector.components['gesto-pellizco']) return detector;
-            if (needsPoint && detector.components['gesto-apuntar']) return detector;
+            if (needsPinch && detector.components['pich-gesture']) return detector;
+            if (needsPoint && detector.components['point-gesture']) return detector;
         }
 
         const entities = this.sceneEl.querySelectorAll('a-entity');
         for (let entity of entities) {
-            if (needsPinch && entity.components['gesto-pellizco']) return entity;
-            if (needsPoint && entity.components['gesto-apuntar']) return entity;
+            if (needsPinch && entity.components['pich-gesture']) return entity;
+            if (needsPoint && entity.components['point-gesture']) return entity;
         }
 
         return null;
     },
 
     _detectColliderType: function () {
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
 
         return gestoComp && gestoComp.data.colliderType ? gestoComp.data.colliderType : 'sat-collider';
     },
 
     _createDetector: function () {
-        console.log('[clickable] Creando detector automático con gesto-apuntar...');
+        console.log('[clickable] Creando detector automático con point-gesture...');
 
         const detector = document.createElement('a-entity');
         detector.setAttribute('id', 'detector-clickable');
-        detector.setAttribute('gesto-apuntar', {
+        detector.setAttribute('point-gesture', {
             hand: 'any',
             indexExtendedThreshold: 0.06,
             otherFingersThreshold: 0.08,
@@ -244,8 +244,8 @@ AFRAME.registerComponent('clickable', {
     tick: function () {
         if (!this.detector) return;
 
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
 
         if (!gestoComp || !gestoComp.getHandCollider) return;
 
@@ -333,8 +333,8 @@ AFRAME.registerComponent('clickable', {
     },
 
     _startClick: function (hand) {
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
 
         const handCollider = gestoComp.getHandCollider(hand);
         if (!handCollider) return;

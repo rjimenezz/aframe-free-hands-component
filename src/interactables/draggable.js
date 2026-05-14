@@ -71,15 +71,15 @@ AFRAME.registerComponent('draggable', {
 
         const entities = this.sceneEl.querySelectorAll('a-entity');
         for (let entity of entities) {
-            if (needsPinch && entity.components['gesto-pellizco']) return entity;
-            if (needsPoint && entity.components['gesto-apuntar']) return entity;
+            if (needsPinch && entity.components['pich-gesture']) return entity;
+            if (needsPoint && entity.components['point-gesture']) return entity;
         }
         return null;
     },
 
     _detectColliderType: function () {
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
 
         const detectedType = gestoComp?.data.colliderType || 'sat-collider';
         console.log(`[draggable] 🔍 Colisionador detectado: ${detectedType}`);
@@ -191,8 +191,8 @@ AFRAME.registerComponent('draggable', {
     tick: function () {
         if (!this.detector) return;
 
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
 
         if (!gestoComp?.getHandCollider) return;
 

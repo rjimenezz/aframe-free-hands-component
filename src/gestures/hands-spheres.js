@@ -33,8 +33,8 @@ AFRAME.registerComponent('manos-esferas', {
   },
 
   _ensureGestures: function () {
-    if (this.data.enablePinch && !this.el.components['gesto-pellizco']) {
-      this.el.setAttribute('gesto-pellizco', {
+    if (this.data.enablePinch && !this.el.components['pich-gesture']) {
+      this.el.setAttribute('pich-gesture', {
         hand: this.data.gestureHand,
         emitEachFrame: this.data.gestureEmitEachFrame,
         colliderType: this.data.gestureColliderType
@@ -42,8 +42,8 @@ AFRAME.registerComponent('manos-esferas', {
       this._autoGestures.pinch = true;
     }
 
-    if (this.data.enablePoint && !this.el.components['gesto-apuntar']) {
-      this.el.setAttribute('gesto-apuntar', {
+    if (this.data.enablePoint && !this.el.components['point-gesture']) {
+      this.el.setAttribute('point-gesture', {
         hand: this.data.gestureHand,
         emitEachFrame: this.data.gestureEmitEachFrame,
         colliderType: this.data.gestureColliderType
@@ -147,8 +147,8 @@ AFRAME.registerComponent('manos-esferas', {
   },
 
   remove: function () {
-    if (this._autoGestures?.pinch) this.el.removeAttribute('gesto-pellizco');
-    if (this._autoGestures?.point) this.el.removeAttribute('gesto-apuntar');
+    if (this._autoGestures?.pinch) this.el.removeAttribute('pich-gesture');
+    if (this._autoGestures?.point) this.el.removeAttribute('point-gesture');
     // Limpiar esferas al quitar el componente
     for (const entry of Object.values(this.jointEntities)) {
       entry.sphere.remove();

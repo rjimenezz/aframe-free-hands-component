@@ -1,28 +1,28 @@
 AFRAME.registerComponent('pinch-move', {
   schema: {
     hand: { type: 'string', default: 'any' },
-    colliderSize: { type: 'vec3', default: {x: 0.3, y: 0.3, z: 0.3} },
+    colliderSize: { type: 'vec3', default: { x: 0.3, y: 0.3, z: 0.3 } },
     debug: { type: 'boolean', default: false }
   },
 
   init: function () {
     this.sceneEl = this.el.sceneEl;
     this.detector = document.getElementById('detector');
-    
-    if (!this.detector || !this.detector.components['gesto-pellizco']) {
-      console.warn('[pinch-move] Falta #detector con gesto-pellizco.');
+
+    if (!this.detector || !this.detector.components['pich-gesture']) {
+      console.warn('[pinch-move] Falta #detector con pich-gesture.');
       return;
     }
 
-    this.colliderType = this.detector.components['gesto-pellizco'].data.colliderType;
+    this.colliderType = this.detector.components['pich-gesture'].data.colliderType;
     console.log(`[pinch-move] Usando colisionador: ${this.colliderType}`);
 
     this.isPinching = { left: false, right: false };
     this.inContact = { left: false, right: false };
-    
+
     this.grabbing = false;
     this.grabHand = null;
-    
+
     // NUEVO: Guardar padre original y offset local
     this.originalParent = null;
     this.localOffset = new THREE.Vector3();
@@ -33,7 +33,7 @@ AFRAME.registerComponent('pinch-move', {
     // Crear colisionador del objeto
     if (this.colliderType === 'obb-collider') {
       this.el.setAttribute('obb-collider', `size: ${this.data.colliderSize.x} ${this.data.colliderSize.y} ${this.data.colliderSize.z}`);
-      
+
       if (this.data.debug) {
         const debugBox = document.createElement('a-box');
         debugBox.setAttribute('width', this.data.colliderSize.x);
@@ -45,7 +45,7 @@ AFRAME.registerComponent('pinch-move', {
         this.el.appendChild(debugBox);
         this.debugBox = debugBox;
       }
-      
+
       this.el.addEventListener('obbcollisionstarted', this._onOBBCollisionStart.bind(this));
       this.el.addEventListener('obbcollisionended', this._onOBBCollisionEnd.bind(this));
     } else {
@@ -72,7 +72,7 @@ AFRAME.registerComponent('pinch-move', {
     if (this.debugBox) this.debugBox.remove();
   },
 
-  _onOBBCollisionStart: function(e) {
+  _onOBBCollisionStart: function (e) {
     const collidedWith = e.detail.withEl;
     if (collidedWith.id.startsWith('hand-collider-')) {
       const hand = collidedWith.id.includes('left') ? 'left' : 'right';
@@ -81,7 +81,7 @@ AFRAME.registerComponent('pinch-move', {
     }
   },
 
-  _onOBBCollisionEnd: function(e) {
+  _onOBBCollisionEnd: function (e) {
     const collidedWith = e.detail.withEl;
     if (collidedWith.id.startsWith('hand-collider-')) {
       const hand = collidedWith.id.includes('left') ? 'left' : 'right';
@@ -91,7 +91,7 @@ AFRAME.registerComponent('pinch-move', {
   },
 
   tick: function () {
-    const gestoComp = this.detector.components['gesto-pellizco'];
+    const gestoComp = this.detector.components['pich-gesture'];
     if (!gestoComp) return;
 
     // Solo hacer detección manual si es sat-collider
@@ -101,13 +101,13 @@ AFRAME.registerComponent('pinch-move', {
 
       ['left', 'right'].forEach(h => {
         const handCollider = gestoComp.getHandCollider(h);
-        
+
         if (handCollider) {
           const wasInContact = this.inContact[h];
           const handOBB = handCollider.getOBB();
           const objectOBB = objectCollider.getOBB();
           this.inContact[h] = handCollider.testCollision(objectOBB);
-          
+
           if (this.inContact[h] && !wasInContact) {
             console.log(`[CONTACTO-SAT-COLLIDER] 🟢 Mano ${h} TOCANDO objeto ${this.el.id || 'sin-id'}`);
             this.el.emit('hand-contact-start', { hand: h }, false);
@@ -173,7 +173,7 @@ AFRAME.registerComponent('pinch-move', {
   },
 
   _startGrab: function (hand) {
-    const gestoComp = this.detector.components['gesto-pellizco'];
+    const gestoComp = this.detector.components['pich-gesture'];
     const handCollider = gestoComp.getHandCollider(hand);
     if (!handCollider) return;
 
@@ -191,7 +191,7 @@ AFRAME.registerComponent('pinch-move', {
     const objWorldPos = new THREE.Vector3();
     const objWorldQuat = new THREE.Quaternion();
     const objWorldScale = new THREE.Vector3();
-    
+
     this.el.object3D.getWorldPosition(objWorldPos);
     this.el.object3D.getWorldQuaternion(objWorldQuat);
     this.el.object3D.getWorldScale(objWorldScale);
@@ -202,16 +202,16 @@ AFRAME.registerComponent('pinch-move', {
     // Ahora convertir la posición/rotación mundial a coordenadas locales del nuevo padre
     const handInverseMatrix = new THREE.Matrix4();
     handInverseMatrix.copy(handColliderEl.object3D.matrixWorld).invert();
-    
+
     // Aplicar la transformación inversa a la posición mundial
     this.el.object3D.position.copy(objWorldPos).applyMatrix4(handInverseMatrix);
-    
+
     // Calcular rotación local relativa a la mano
     const handWorldQuat = new THREE.Quaternion();
     handColliderEl.object3D.getWorldQuaternion(handWorldQuat);
     const handInverseQuat = handWorldQuat.clone().invert();
     this.el.object3D.quaternion.copy(handInverseQuat).multiply(objWorldQuat);
-    
+
     // Mantener escala original
     this.el.object3D.scale.copy(objWorldScale);
 
@@ -225,14 +225,14 @@ AFRAME.registerComponent('pinch-move', {
     if (!this.grabbing) return;
 
     const hand = this.grabHand;
-    const gestoComp = this.detector.components['gesto-pellizco'];
+    const gestoComp = this.detector.components['pich-gesture'];
     const handColliderEl = gestoComp.state[hand]?.colliderEntity;
 
     // Guardar transformación mundial ANTES de cambiar de padre
     const worldPos = new THREE.Vector3();
     const worldQuat = new THREE.Quaternion();
     const worldScale = new THREE.Vector3();
-    
+
     this.el.object3D.getWorldPosition(worldPos);
     this.el.object3D.getWorldQuaternion(worldQuat);
     this.el.object3D.getWorldScale(worldScale);
@@ -251,17 +251,17 @@ AFRAME.registerComponent('pinch-move', {
     const parentInverseMatrix = new THREE.Matrix4();
     const targetParent = this.originalParent || this.sceneEl.object3D;
     parentInverseMatrix.copy(targetParent.matrixWorld).invert();
-    
+
     // Aplicar transformación inversa
     const localPos = worldPos.clone().applyMatrix4(parentInverseMatrix);
     this.el.object3D.position.copy(localPos);
-    
+
     // Para la rotación, calcular relativa al nuevo padre
     const parentWorldQuat = new THREE.Quaternion();
     targetParent.getWorldQuaternion(parentWorldQuat);
     const parentInverseQuat = parentWorldQuat.clone().invert();
     this.el.object3D.quaternion.copy(parentInverseQuat).multiply(worldQuat);
-    
+
     // Restaurar escala
     this.el.object3D.scale.copy(worldScale);
 
@@ -269,7 +269,7 @@ AFRAME.registerComponent('pinch-move', {
 
     this.grabbing = false;
     this.grabHand = null;
-    
+
     this.el.emit('pinchmoverend', { hand }, false);
     this.el.setAttribute('color', '#4CAF50');
   }

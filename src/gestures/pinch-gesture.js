@@ -1,9 +1,9 @@
 /**
- * Componente: gesto-pellizco
+ * Componente: pich-gesture
  * Detecta pellizco + crea colisionador OBB por cada mano.
  * Eventos: pinchstart, pinchmove, pinchend (con info de colisión).
  */
-AFRAME.registerComponent('gesto-pellizco', {
+AFRAME.registerComponent('pich-gesture', {
     schema: {
         hand: { type: 'string', default: 'any' },
         startDistance: { type: 'number', default: 0.025 },
@@ -80,7 +80,7 @@ AFRAME.registerComponent('gesto-pellizco', {
             handState.colliderEntity = colliderEntity;
         });
 
-        console.log(`[gesto-pellizco] Usando colisionador: ${this.data.colliderType}`);
+        console.log(`[pich-gesture] Usando colisionador: ${this.data.colliderType}`);
     },
 
     remove: function () {
@@ -163,7 +163,7 @@ AFRAME.registerComponent('gesto-pellizco', {
 
     _emit: function (type, hand, distance) {
         if (this.data.log) {
-            console.log(`[gesto-pellizco] ${type} mano=${hand} dist=${distance.toFixed(4)}m`);
+            console.log(`[pich-gesture] ${type} mano=${hand} dist=${distance.toFixed(4)}m`);
         }
         this.el.emit(type, { hand, distance }, false);
     },

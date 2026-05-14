@@ -106,28 +106,28 @@ AFRAME.registerComponent('stretchable', {
         const needsPoint = this.data.startGesture.startsWith('point');
 
         let detector = document.getElementById('detector-pellizco');
-        if (detector && needsPinch && detector.components['gesto-pellizco']) return detector;
+        if (detector && needsPinch && detector.components['pich-gesture']) return detector;
 
         detector = document.getElementById('detector-apuntar');
-        if (detector && needsPoint && detector.components['gesto-apuntar']) return detector;
+        if (detector && needsPoint && detector.components['point-gesture']) return detector;
 
         detector = document.getElementById('detector');
         if (detector) {
-            if (needsPinch && detector.components['gesto-pellizco']) return detector;
-            if (needsPoint && detector.components['gesto-apuntar']) return detector;
+            if (needsPinch && detector.components['pich-gesture']) return detector;
+            if (needsPoint && detector.components['point-gesture']) return detector;
         }
 
         const entities = this.sceneEl.querySelectorAll('a-entity');
         for (let entity of entities) {
-            if (needsPinch && entity.components['gesto-pellizco']) return entity;
-            if (needsPoint && entity.components['gesto-apuntar']) return entity;
+            if (needsPinch && entity.components['pich-gesture']) return entity;
+            if (needsPoint && entity.components['point-gesture']) return entity;
         }
         return null;
     },
 
     _detectColliderType: function () {
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
 
         const detectedType = gestoComp?.data.colliderType || 'sat-collider';
         console.log(`[stretchable] 🔍 Colisionador detectado del gesto: ${detectedType}`);
@@ -163,8 +163,8 @@ AFRAME.registerComponent('stretchable', {
 
     tick: function () {
         if (!this.detector) return;
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
         if (!gestoComp || !gestoComp.getHandCollider) return;
 
         if (!this.el.is('grabbed')) {
@@ -265,8 +265,8 @@ AFRAME.registerComponent('stretchable', {
         this.baseColliderSize = null;
 
         // ✅ Fijar distancia inicial inmediatamente al arrancar (evita saltos)
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
         const collider1 = gestoComp?.state?.left?.colliderEntity;
         const collider2 = gestoComp?.state?.right?.colliderEntity;
 
@@ -299,8 +299,8 @@ AFRAME.registerComponent('stretchable', {
     },
 
     _processStretch: function () {
-        const gestoComp = this.detector.components['gesto-pellizco'] ||
-            this.detector.components['gesto-apuntar'];
+        const gestoComp = this.detector.components['pich-gesture'] ||
+            this.detector.components['point-gesture'];
         const collider1 = gestoComp.state.left.colliderEntity;
         const collider2 = gestoComp.state.right.colliderEntity;
 

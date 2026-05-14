@@ -1,5 +1,5 @@
 /**
- * Componente: gesto-apuntar
+ * Componente: point-gesture
  * Detecta cuando el usuario apunta con el dedo índice extendido (resto de dedos cerrados).
  * Perfecto para interacciones tipo "click" o "hover".
  * Eventos: pointstart, pointmove, pointend (con info de dirección y distancia)
@@ -10,7 +10,7 @@
  * - ✅ PULGAR IGNORADO (puede estar extendido o no)
  * - ❌ Se CANCELA si índice y pulgar están muy cerca (pellizco)
  */
-AFRAME.registerComponent('gesto-apuntar', {
+AFRAME.registerComponent('point-gesture', {
     schema: {
         hand: { type: 'string', default: 'any' }, // 'left', 'right', 'any'
         indexExtendedThreshold: { type: 'number', default: 0.06 }, // MÁS PERMISIVO
@@ -89,8 +89,8 @@ AFRAME.registerComponent('gesto-apuntar', {
             handState.colliderEntity = colliderEntity;
         });
 
-        console.log(`[gesto-apuntar] ✅ Inicializado con colisionador: ${this.data.colliderType}`);
-        console.log(`[gesto-apuntar] Umbrales: índice=${this.data.indexExtendedThreshold}m, otros=${this.data.otherFingersThreshold}m, pellizco-cancel=${this.data.pinchCancelThreshold}m`);
+        console.log(`[point-gesture] ✅ Inicializado con colisionador: ${this.data.colliderType}`);
+        console.log(`[point-gesture] Umbrales: índice=${this.data.indexExtendedThreshold}m, otros=${this.data.otherFingersThreshold}m, pellizco-cancel=${this.data.pinchCancelThreshold}m`);
     },
 
     remove: function () {
@@ -162,7 +162,7 @@ AFRAME.registerComponent('gesto-apuntar', {
                 if (!this._lastDebugTime) this._lastDebugTime = 0;
                 const now = Date.now();
                 if (now - this._lastDebugTime > 1000) {
-                    console.log(`[gesto-apuntar] ${handedness} | índice=${indexDistance.toFixed(3)}m medio=${middleDistance.toFixed(3)}m anular=${ringDistance.toFixed(3)}m meñique=${pinkyDistance.toFixed(3)}m pellizco=${pinchDistance.toFixed(3)}m`);
+                    console.log(`[point-gesture] ${handedness} | índice=${indexDistance.toFixed(3)}m medio=${middleDistance.toFixed(3)}m anular=${ringDistance.toFixed(3)}m meñique=${pinkyDistance.toFixed(3)}m pellizco=${pinchDistance.toFixed(3)}m`);
                     this._lastDebugTime = now;
                 }
             }
@@ -230,7 +230,7 @@ AFRAME.registerComponent('gesto-apuntar', {
 
     _emit: function (type, hand, distance, direction) {
         if (this.data.log) {
-            console.log(`[gesto-apuntar] ${type} mano=${hand} dist-índice=${distance.toFixed(4)}m dir=(${direction.x.toFixed(2)}, ${direction.y.toFixed(2)}, ${direction.z.toFixed(2)})`);
+            console.log(`[point-gesture] ${type} mano=${hand} dist-índice=${distance.toFixed(4)}m dir=(${direction.x.toFixed(2)}, ${direction.y.toFixed(2)}, ${direction.z.toFixed(2)})`);
         }
         this.el.emit(type, {
             hand,
@@ -304,12 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!detector) return;
 
     detector.addEventListener('pointstart', e => {
-        console.log('[gesto-apuntar] ✅ EVENT pointstart recibido');
+        console.log('[point-gesture] ✅ EVENT pointstart recibido');
         setMessage(`POINT START (${e.detail.hand})`, '#00FF66', null);
     });
 
     detector.addEventListener('pointend', e => {
-        console.log('[gesto-apuntar] ❌ EVENT pointend recibido');
+        console.log('[point-gesture] ❌ EVENT pointend recibido');
         setMessage(`POINT END (${e.detail.hand})`, '#FF5555', 1200);
     });
 });
