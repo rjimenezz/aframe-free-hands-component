@@ -1,4 +1,4 @@
-AFRAME.registerComponent('manos-esferas', {
+AFRAME.registerComponent('hands-spheres', {
   schema: {
     // Radio por defecto si el dispositivo no da radio de la articulación
     radius: { type: 'number', default: 0.006 },
