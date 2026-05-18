@@ -128,7 +128,7 @@ AFRAME.registerComponent('clickable', {
         this.detector = detector;
 
         const manos = document.createElement('a-entity');
-        manos.setAttribute('manos-esferas', {
+        manos.setAttribute('hands-spheres', {
             useJointRadius: true,
             colorLeft: '#39f',
             colorRight: '#f93',
