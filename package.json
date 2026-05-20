@@ -3,6 +3,7 @@
     "version": "1.0.5",
     "description": "Hand tracking interaction components for A-Frame",
     "main": "dist/free-hands.min.js",
+    "private": true,
     "scripts": {
         "build": "rollup -c"
     },
